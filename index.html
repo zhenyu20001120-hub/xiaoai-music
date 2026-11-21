@@ -30,6 +30,37 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
 .spk-badge{display:flex;align-items:center;gap:6px;font-size:12px;color:#1a9c6b;background:#eafaf2;padding:6px 11px;border-radius:14px;font-weight:600}
 .spk-badge .dot{width:7px;height:7px;border-radius:50%;background:#1ac583}
 
+/* ============ 添加歌单 ============ */
+.btn-add{display:flex;align-items:center;gap:5px;height:34px;padding:0 14px;border-radius:17px;border:1px solid #f2c2c2;background:#fff6f6;color:var(--red);font-size:13px;font-weight:600;flex:none;white-space:nowrap}
+.btn-add:hover{background:#ffecec;border-color:var(--red)}
+.btn-add .plus{font-size:15px;line-height:1;margin-top:-1px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:200}
+.modal.show{display:flex}
+.modal-card{width:540px;max-width:92vw;background:#fff;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.25);overflow:hidden}
+.modal-h{padding:20px 24px 15px;font-size:17px;font-weight:700;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line)}
+.modal-h .x{margin-left:auto;color:var(--txt3);font-size:22px;width:30px;height:30px;border-radius:50%;line-height:1}
+.modal-h .x:hover{background:var(--bg3)}
+.modal-b{padding:20px 24px 24px}
+.modal-b .tip{font-size:12.5px;color:var(--txt3);line-height:1.85;margin-bottom:14px}
+.modal-b input[type=text]{width:100%;height:42px;border:1px solid var(--line);border-radius:8px;padding:0 13px;font-size:13.5px;outline:0;font-family:inherit;color:var(--txt)}
+.modal-b input[type=text]:focus{border-color:var(--red)}
+.modal-b .row{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
+.btn-primary{background:var(--red);color:#fff;height:38px;padding:0 24px;border-radius:19px;font-size:13.5px;font-weight:600}
+.btn-primary:hover{background:var(--red-d)}
+.btn-primary:disabled{opacity:.55;cursor:not-allowed}
+.btn-ghost{height:38px;padding:0 18px;border-radius:19px;border:1px solid var(--line);color:var(--txt2);font-size:13.5px;background:#fff}
+.btn-ghost:hover{background:var(--bg2)}
+.import-progress{margin-top:18px;display:none}
+.import-progress.show{display:block}
+.import-progress .st{font-size:12.5px;color:var(--txt2);margin-bottom:9px;line-height:1.6}
+.import-progress .pbar{height:6px;background:#eef0f3;border-radius:3px;overflow:hidden}
+.import-progress .pbar i{display:block;height:100%;width:0;background:var(--red);border-radius:3px;transition:width .35s}
+.import-result{margin-top:16px;font-size:13px;line-height:1.9;display:none;border-top:1px dashed var(--line);padding-top:14px}
+.import-result.show{display:block}
+.import-result .ok{color:#1a9c6b;font-weight:700;margin-bottom:4px}
+.import-result .bad{color:#c0392b;font-weight:600;margin-top:8px}
+.import-result .fail-list{max-height:110px;overflow-y:auto;font-size:12px;color:var(--txt3);margin-top:4px;line-height:1.7}
+
 /* ============ 左侧栏 ============ */
 .side{background:var(--bg2);border-right:1px solid var(--line);overflow-y:auto;padding:16px 0 20px}
 .side::-webkit-scrollbar,.main::-webkit-scrollbar{width:6px}
@@ -147,6 +178,7 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
     <div class="logo"><span class="disc"></span>小爱音乐台</div>
     <div class="nav-arrows"><button title="后退">‹</button><button title="前进">›</button></div>
     <div class="search"><svg class="icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input id="search" placeholder="搜索音乐、歌手"></div>
+    <button class="btn-add" id="btnAddPl" title="粘贴网易云歌单链接，自动下载并加入左侧歌单"><span class="plus">＋</span>添加歌单</button>
     <div class="spk-badge"><span class="dot"></span><span id="spkName">小爱音箱</span></div>
     <button id="btnBridge" title="点击修改本机桥接地址" style="font-size:11px;color:#888;background:#f0f1f4;padding:5px 10px;border-radius:12px">本机连接</button>
   </div>
@@ -214,6 +246,32 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
   <div class="drawer-list" id="drawerList"></div>
 </div>
 <div class="toast" id="toast"></div>
+
+<!-- 添加歌单弹窗 -->
+<div class="modal" id="addModal">
+  <div class="modal-card">
+    <div class="modal-h">
+      <span>添加网易云歌单</span>
+      <button class="x" id="addClose" title="关闭">×</button>
+    </div>
+    <div class="modal-b">
+      <div class="tip">
+        把网易云歌单链接粘进来（浏览器地址栏复制即可）。<br>
+        会自动下载歌曲到本机 Music 文件夹，并加到左侧「我的歌单」。
+      </div>
+      <input type="text" id="addUrl" placeholder="https://music.163.com/playlist?id=18546163449" spellcheck="false">
+      <div class="row">
+        <button class="btn-ghost" id="addCancel">取消</button>
+        <button class="btn-primary" id="addGo">开始导入</button>
+      </div>
+      <div class="import-progress" id="importProg">
+        <div class="st" id="progStage">准备中…</div>
+        <div class="pbar"><i id="progFill"></i></div>
+      </div>
+      <div class="import-result" id="importRes"></div>
+    </div>
+  </div>
+</div>
 
 <script>
 /* ============ 基础：token / API ============ */
@@ -449,6 +507,90 @@ function showOffline(extra){
   document.getElementById('offurl').textContent=BRIDGE+P+'/static/goto.html';
 }
 function failAll(msg){toast(msg);showOffline()}
+
+/* ============ 添加网易云歌单 ============ */
+var addJobId=null, addTimer=null;
+var addModal=document.getElementById('addModal');
+function openAddModal(){
+  addModal.classList.add('show');
+  document.getElementById('addUrl').value='';
+  document.getElementById('importProg').classList.remove('show');
+  document.getElementById('importRes').classList.remove('show');
+  var go=document.getElementById('addGo'); go.disabled=false; go.textContent='开始导入';
+  setTimeout(function(){document.getElementById('addUrl').focus()},120);
+}
+function closeAddModal(){
+  if(addTimer){clearInterval(addTimer);addTimer=null}
+  addModal.classList.remove('show');
+}
+async function startImport(){
+  var url=document.getElementById('addUrl').value.trim();
+  if(!url){toast('请先粘贴网易云歌单链接');return}
+  var go=document.getElementById('addGo');
+  go.disabled=true; go.textContent='导入中…';
+  document.getElementById('importProg').classList.add('show');
+  document.getElementById('importRes').classList.remove('show');
+  document.getElementById('progStage').textContent='正在解析歌单…';
+  document.getElementById('progFill').style.width='4%';
+  try{
+    var r=await fetch(BRIDGE+'/local/import-playlist',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({url:url})
+    });
+    var j=await r.json();
+    if(!j.ok) throw new Error(j.error||'提交失败');
+    addJobId=j.job_id;
+    pollImport();
+  }catch(e){
+    go.disabled=false; go.textContent='重试';
+    document.getElementById('progStage').textContent='连接本机服务失败：'+e.message;
+  }
+}
+function pollImport(){
+  if(addTimer) clearInterval(addTimer);
+  addTimer=setInterval(async function(){
+    try{
+      var r=await fetch(BRIDGE+'/local/import-status?job_id='+addJobId);
+      var j=await r.json();
+      if(!j.ok) return;
+      var pct=j.total?Math.round((j.done||0)/j.total*100):6;
+      document.getElementById('progFill').style.width=Math.max(pct,4)+'%';
+      document.getElementById('progStage').textContent=j.stage||'处理中…';
+      if(j.status==='done'){
+        clearInterval(addTimer); addTimer=null;
+        var go=document.getElementById('addGo'); go.disabled=false; go.textContent='再添一个';
+        var res=j.result||{};
+        var box=document.getElementById('importRes'); box.classList.add('show');
+        var h='<div class="ok">✓ 已导入《'+esc(res.name||'')+'》</div>';
+        h+='<div>下载成功 '+res.downloaded+' 首 · 歌单现有 '+res.added+' 首</div>';
+        if(res.failed&&res.failed.length){
+          h+='<div class="bad">'+res.failed.length+' 首没拿到：</div><div class="fail-list">';
+          for(var i=0;i<res.failed.length;i++){
+            h+='<div>· '+esc(res.failed[i].name)+'（'+esc(res.failed[i].reason)+'）</div>';
+          }
+          h+='</div>';
+        }
+        box.innerHTML=h;
+        await loadPlaylists();
+        if(res.playlist_id) selectPlaylist(res.playlist_id);
+        toast('歌单已加入：'+(res.name||''));
+      }else if(j.status==='error'){
+        clearInterval(addTimer); addTimer=null;
+        var g2=document.getElementById('addGo'); g2.disabled=false; g2.textContent='重试';
+        var b=document.getElementById('importRes'); b.classList.add('show');
+        b.innerHTML='<div class="bad">导入失败：'+esc(j.error||'未知错误')+'</div>';
+      }
+    }catch(e){}
+  },1500);
+}
+document.getElementById('btnAddPl').onclick=openAddModal;
+document.getElementById('addGo').onclick=startImport;
+document.getElementById('addClose').onclick=closeAddModal;
+document.getElementById('addCancel').onclick=closeAddModal;
+addModal.onclick=function(e){if(e.target===addModal)closeAddModal()};
+document.getElementById('addUrl').addEventListener('keydown',function(e){
+  if(e.key==='Enter') startImport();
+});
 
 /* ============ 桥接地址设置 ============ */
 document.getElementById('btnBridge').onclick=function(){
