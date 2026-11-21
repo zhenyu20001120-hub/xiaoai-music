@@ -219,7 +219,7 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
 /* ============ 基础：token / API ============ */
 var qs=new URLSearchParams(location.search);
 // 本机桥接地址：默认 localhost:58092，可用 ?bridge=http://192.168.x.x:58092 覆盖并记忆
-var BRIDGE=qs.get('bridge')||localStorage.getItem('xiaomi_bridge')||'http://'+location.hostname+':58092';
+var BRIDGE=qs.get('bridge')||localStorage.getItem('xiaomi_bridge')||'http://localhost:58092';
 if(qs.get('bridge')){try{localStorage.setItem('xiaomi_bridge',BRIDGE)}catch(e){}}
 var TOKEN=qs.get('access_token')||localStorage.getItem('miot_token')||'';
 if(qs.get('access_token')){ try{localStorage.setItem('miot_token',TOKEN);sessionStorage.setItem('miot_token',TOKEN)}catch(e){} }
