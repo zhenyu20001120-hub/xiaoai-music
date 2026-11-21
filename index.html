@@ -12,7 +12,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--txt);background:var(--bg);overflow:hidden;font-size:14px}
-.app{display:grid;grid-template-columns:220px 1fr;grid-template-rows:64px 1fr 84px;height:100vh;width:100vw}
+.app{display:grid;grid-template-columns:220px 1fr;grid-template-rows:64px 1fr 84px;height:100vh;width:100vw;overflow:hidden}
 .icon{width:18px;height:18px;fill:currentColor;flex:none;vertical-align:middle}
 button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit}
 
@@ -22,6 +22,10 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
 .logo .disc{width:30px;height:30px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;flex:none}
 .logo .disc::after{content:"";width:9px;height:9px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.35)}
 .nav-arrows{display:flex;gap:6px;margin-left:8px}
+.menu-btn{display:none;width:32px;height:32px;border-radius:8px;background:var(--bg3);align-items:center;justify-content:center;color:var(--txt2);flex:none;margin-right:4px;font-size:16px}
+.menu-btn:hover{background:#e4e6ea}
+.side-mask{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:190}
+.side-mask.show{display:block}
 .nav-arrows button{width:28px;height:28px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;color:var(--txt2)}
 .nav-arrows button:hover{background:#e4e6ea}
 .search{margin-left:auto;width:230px;height:34px;background:var(--bg3);border-radius:18px;display:flex;align-items:center;gap:8px;padding:0 14px;color:var(--txt3)}
@@ -74,7 +78,7 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
 .side-item .cnt{margin-left:auto;font-size:11px;color:var(--txt3)}
 
 /* ============ 主区 ============ */
-.main{overflow-y:auto;background:#fff;position:relative}
+.main{overflow-y:auto;background:#fff;position:relative;min-height:0}
 .detail{padding:36px 44px 20px}
 .pl-head{display:flex;gap:28px;align-items:flex-end;margin-bottom:26px}
 .cover{width:200px;height:200px;border-radius:10px;background:linear-gradient(145deg,#f0c2c5,#e8a0a6);box-shadow:0 6px 20px rgba(0,0,0,.12);flex:none;object-fit:cover;border:1px solid #eee}
@@ -126,8 +130,9 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
 .ctrls .play-main{width:36px;height:36px;border-radius:50%;background:var(--red);color:#fff}
 .ctrls .play-main:hover{background:var(--red-d);color:#fff}
 .prog{display:flex;align-items:center;gap:10px;width:100%;font-size:11px;color:var(--txt3);font-variant-numeric:tabular-nums}
-.prog .track-bar{flex:1;height:4px;background:#e5e6ea;border-radius:2px;position:relative;cursor:pointer}
-.prog .fill{height:100%;background:var(--red);border-radius:2px;width:0;position:relative}
+.prog .track-bar{flex:1;height:16px;position:relative;cursor:pointer;display:flex;align-items:center}
+.prog .track-bar::before{content:"";position:absolute;left:0;right:0;height:4px;background:#e5e6ea;border-radius:2px}
+.prog .fill{height:4px;background:var(--red);border-radius:2px;width:0;position:relative;z-index:1}
 .prog .fill::after{content:"";position:absolute;right:-5px;top:-3px;width:10px;height:10px;border-radius:50%;background:#fff;border:2px solid var(--red);opacity:0;transition:opacity .15s}
 .prog .track-bar:hover .fill::after{opacity:1}
 .bar-right{display:flex;align-items:center;justify-content:flex-end;gap:16px;color:var(--txt2)}
@@ -184,7 +189,17 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
 .dv-meta{font-size:11.5px;color:var(--txt3);margin-top:4px}
 .dv-card.loading .dv-cover::after{content:'准备中…';position:absolute;inset:0;background:rgba(0,0,0,.55);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12.5px;z-index:2}
 .dv-empty{padding:36px 0;color:var(--txt3);font-size:13px;line-height:1.9}
-@media(max-width:900px){.app{grid-template-columns:0 1fr}.side{display:none}.detail,.tracks{padding-left:20px;padding-right:20px}.bar{grid-template-columns:1fr 1.4fr 1fr}}
+@media(max-width:900px){
+  .app{grid-template-columns:0 1fr}
+  .side{display:block;position:fixed;left:0;top:0;bottom:0;width:238px;z-index:200;transform:translateX(-101%);transition:transform .22s ease;box-shadow:2px 0 18px rgba(0,0,0,.12)}
+  .side.open{transform:none}
+  .menu-btn{display:flex}
+  .nav-arrows{display:none}
+  .detail,.tracks{padding-left:20px;padding-right:20px}
+  .bar{grid-template-columns:1fr 1.4fr 1fr;padding:0 12px;gap:10px}
+  .bar-left .bar-song{max-width:120px}
+  .spk-badge span:last-child{display:none}
+}
 @media(max-width:900px){.discover-view{padding:18px 20px 40px}.dv-grid{grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:16px 12px}.dv-title{font-size:20px}}
 </style>
 </head>
@@ -197,11 +212,13 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
 </div></div>
 
 <div class="app">
+  <div class="side-mask" id="sideMask"></div>
   <!-- 顶部 -->
   <div class="top">
+    <button class="menu-btn" id="btnMenu" title="歌单列表">☰</button>
     <div class="logo"><span class="disc"></span>小爱音乐台</div>
     <div class="nav-arrows"><button title="后退">‹</button><button title="前进">›</button></div>
-    <div class="search"><svg class="icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input id="search" placeholder="搜索音乐、歌手"></div>
+    <div class="search"><svg class="icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input id="search" placeholder="搜索当前歌单 / 发现页搜歌单"></div>
     <button class="btn-add" id="btnAddPl" title="粘贴网易云歌单链接，自动下载并加入左侧歌单"><span class="plus">＋</span>添加歌单</button>
     <div class="spk-badge"><span class="dot"></span><span id="spkName">小爱音箱</span></div>
     <button id="btnBridge" title="点击修改本机桥接地址" style="font-size:11px;color:#888;background:#f0f1f4;padding:5px 10px;border-radius:12px">本机连接</button>
@@ -246,7 +263,6 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
           <div class="pl-meta"><b id="plOwner">小爱音乐台</b><span id="plCount"></span></div>
           <div class="pl-actions">
             <button class="btn-play" id="btnPlayAll"><svg class="icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>播放全部</button>
-            <button class="btn-round" id="btnFavPl" title="收藏歌单"><svg class="icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></button>
           </div>
         </div>
       </div>
@@ -371,6 +387,18 @@ function parseTitle(t){
 }
 function coverUrl(u){return u?authUrl(u):''}
 
+/* ============ 窄屏侧栏抽屉 ============ */
+function closeSideDrawer(){
+  var s=document.querySelector('.side'),m=document.getElementById('sideMask');
+  if(s)s.classList.remove('open');
+  if(m)m.classList.remove('show');
+}
+document.getElementById('btnMenu').onclick=function(){
+  var s=document.querySelector('.side'),m=document.getElementById('sideMask');
+  s.classList.toggle('open');m.classList.toggle('show',s.classList.contains('open'));
+};
+document.getElementById('sideMask').onclick=closeSideDrawer;
+
 /* ============ 歌单侧栏 ============ */
 async function loadPlaylists(){
   var r=await api('/playlists');
@@ -391,13 +419,40 @@ async function loadPlaylists(){
   document.getElementById('sideDiscoverSec').style.display=dbox.children.length?'':'none';
 }
 
+/* ============ 视图历史（顶部后退/前进） ============ */
+var HIST=[], HPOS=-1;
+function syncNav(){
+  var b=document.querySelectorAll('.nav-arrows button');
+  if(b.length<2)return;
+  b[0].disabled=HPOS<=0;
+  b[1].disabled=HPOS>=HIST.length-1;
+  b[0].style.opacity=b[0].disabled?0.3:1;
+  b[1].style.opacity=b[1].disabled?0.3:1;
+  b[0].style.cursor=b[0].disabled?'default':'pointer';
+  b[1].style.cursor=b[1].disabled?'default':'pointer';
+}
+function recView(v){
+  if(HPOS>=0&&HIST[HPOS]===v)return;
+  HIST=HIST.slice(0,HPOS+1);
+  HIST.push(v);HPOS=HIST.length-1;
+  if(HIST.length>50){HIST=HIST.slice(-50);HPOS=HIST.length-1}
+  syncNav();
+}
+function applyView(v){
+  if(v==='discover')showDiscover(true);else selectPlaylist(v,true);
+}
+document.querySelectorAll('.nav-arrows button')[0].onclick=function(){if(HPOS>0){HPOS--;applyView(HIST[HPOS]);syncNav()}};
+document.querySelectorAll('.nav-arrows button')[1].onclick=function(){if(HPOS<HIST.length-1){HPOS++;applyView(HIST[HPOS]);syncNav()}};
+
 /* ============ 歌单详情 ============ */
-async function selectPlaylist(id){
+async function selectPlaylist(id,noHist){
   CURRENT_PL=id;
+  closeSideDrawer();
   GUARD=Date.now()+700;   // 视图刚切换，避免同一次点击"穿透"到下面的歌曲行
   hideDiscover();
   document.getElementById('navDiscover').classList.remove('active');
   document.querySelectorAll('.side-item[data-pl]').forEach(function(e){e.classList.toggle('active',+e.getAttribute('data-pl')===id)});
+  if(!noHist)recView(id);
   var pl=PLAYLISTS.find(function(p){return p.id===id});
   if(pl){
     document.getElementById('plName').textContent=pl.name;
@@ -469,17 +524,55 @@ document.getElementById('btnMode').onclick=function(){
   });
 };
 
-/* 进度拖动 */
+/* 进度拖动（鼠标 + 触摸） */
 var pg=document.getElementById('progBar');
-pg.addEventListener('mousedown',function(e){dragging=true;seekAt(e)});
-window.addEventListener('mousemove',function(e){if(dragging)seekAt(e)});
-window.addEventListener('mouseup',function(e){if(dragging){dragging=false;var pos=calcPos(e);api('/player/seek',{method:'POST',body:{account_id:ACC,device_id:DEV,position:pos}})}});
-function calcPos(e){var r=pg.getBoundingClientRect();var f=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));return Math.round(f*(STATUS?STATUS.duration:0))}
-function seekAt(e){var r=pg.getBoundingClientRect();var f=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));document.getElementById('progFill').style.width=(f*100)+'%';document.getElementById('curTime').textContent=fmt(f*(STATUS?STATUS.duration:0))}
+function evX(e){return (e.touches&&e.touches[0])?e.touches[0].clientX:((e.changedTouches&&e.changedTouches[0])?e.changedTouches[0].clientX:e.clientX)}
+function ratioAt(x){var r=pg.getBoundingClientRect();return Math.max(0,Math.min(1,(x-r.left)/r.width))}
+function paintAt(x){var f=ratioAt(x);document.getElementById('progFill').style.width=(f*100)+'%';document.getElementById('curTime').textContent=fmt(f*(STATUS?STATUS.duration:0))}
+function commitSeek(x){
+  var dur=STATUS?STATUS.duration:0;
+  if(!dur){toast('这首歌还在读取时长，稍后再拖');return}
+  var pos=Math.round(ratioAt(x)*dur);
+  api('/player/seek',{method:'POST',body:{account_id:ACC,device_id:DEV,position:pos}}).then(function(r){
+    if(r.success){toast('已跳到 '+fmt(pos));setTimeout(refreshStatus,300)}
+    else{toast('拖动失败：'+(r.error==='current song does not support seeking'?'这首歌没有时长信息':'未知原因'));refreshStatus()}
+  });
+}
+var _lastSeekAt=0;
+function startDrag(e){dragging=true;paintAt(evX(e));if(e.cancelable)e.preventDefault()}
+function moveDrag(e){if(!dragging)return;paintAt(evX(e));if(e.cancelable)e.preventDefault()}
+function endDrag(e){if(!dragging)return;dragging=false;_lastSeekAt=Date.now();commitSeek(evX(e))}
+pg.addEventListener('mousedown',startDrag);
+window.addEventListener('mousemove',moveDrag);
+window.addEventListener('mouseup',endDrag);
+pg.addEventListener('touchstart',startDrag,{passive:false});
+pg.addEventListener('touchmove',moveDrag,{passive:false});
+pg.addEventListener('touchend',endDrag);
+pg.addEventListener('touchcancel',function(){dragging=false;refreshStatus()});
+// 兜底：某些环境（或被拦住 mousedown 时）只派发 click
+pg.addEventListener('click',function(e){
+  if(dragging)return;
+  if(Date.now()-_lastSeekAt<250)return;   // 刚刚 mouseup 已经 seek 过
+  _lastSeekAt=Date.now();
+  paintAt(evX(e));
+  commitSeek(evX(e));
+});
 
-/* 音量 */
+/* 音量（拖动即时生效，300ms 节流，避免刷爆接口） */
 var volEl=document.getElementById('vol');
-volEl.addEventListener('change',function(){api('/mina/volume',{method:'POST',body:{account_id:ACC,device_id:DEV,volume:+volEl.value}}).then(function(r){if(r.success)toast('音量：'+volEl.value)})});
+var volTimer=null, volBusy=false;
+function sendVol(){
+  volTimer=null; volBusy=true;
+  api('/mina/volume',{method:'POST',body:{account_id:ACC,device_id:DEV,volume:+volEl.value}}).then(function(r){
+    volBusy=false;
+    if(r.success)toast('音量：'+volEl.value);
+  });
+}
+volEl.addEventListener('input',function(){
+  if(volTimer)clearTimeout(volTimer);
+  volTimer=setTimeout(sendVol,300);
+});
+volEl.addEventListener('change',function(){ if(!volTimer&&!volBusy)sendVol(); });
 
 /* 收藏 */
 document.getElementById('btnHeart').onclick=function(){
@@ -494,16 +587,36 @@ document.getElementById('btnHeart').onclick=function(){
   });
 };
 
-/* 搜索 */
+/* 搜索：歌单页过滤歌曲，发现页过滤歌单卡片 */
 document.getElementById('search').addEventListener('input',function(e){
   var q=e.target.value.trim().toLowerCase();
+  var dv=document.getElementById('discoverView');
+  if(dv&&dv.classList.contains('show')){
+    DV_Q=q;
+    renderDiscover();
+    return;
+  }
   var list=document.getElementById('trackList');
   var rows=list.querySelectorAll('.track');
+  var shown=0;
   rows.forEach(function(row,i){
     if(!q){row.style.display='';return}
-    var s=SONGS[i];var txt=(s.title+' '+parseTitle(s.title).artist).toLowerCase();
-    row.style.display=txt.indexOf(q)>=0?'':'none';
+    var s=SONGS[i];if(!s){row.style.display='';return}
+    var p=parseTitle(s.title);
+    var txt=(s.title+' '+(s.artist||'')+' '+p.artist).toLowerCase();
+    var hit=txt.indexOf(q)>=0;
+    row.style.display=hit?'':'none';
+    if(hit)shown++;
   });
+  var hint=document.getElementById('searchHint');
+  if(!hint){
+    hint=document.createElement('div');hint.id='searchHint';
+    hint.style.cssText='padding:14px 0;color:#999;font-size:13px';
+    list.parentNode.insertBefore(hint,list.nextSibling);
+  }
+  if(!q){hint.textContent='';}
+  else if(shown===0){hint.textContent='当前歌单里没找到「'+e.target.value.trim()+'」。搜索只针对当前歌单，换个歌单再试。';}
+  else{hint.textContent='当前歌单内找到 '+shown+' 首';}
 });
 
 /* 播放列表抽屉 */
@@ -542,7 +655,7 @@ async function refreshStatus(){
     document.getElementById('curTime').textContent=fmt(st.position);
     document.getElementById('totTime').textContent=fmt(st.duration);
   }
-  document.getElementById('vol').value=st.volume!=null?st.volume:50;
+  if(!volTimer&&!volBusy) document.getElementById('vol').value=st.volume!=null?st.volume:50;
   setModeUI(st.play_mode);
   // 音箱名
   if(st.device_name)document.getElementById('spkName').textContent=st.device_name;
@@ -641,7 +754,7 @@ document.getElementById('addUrl').addEventListener('keydown',function(e){
 });
 
 /* ============ 发现音乐 ============ */
-var DISCOVER=[], DV_CAT='全部', dvLoaded=false;
+var DISCOVER=[], DV_CAT='全部', DV_Q='', dvLoaded=false;
 
 function fmtNum(n){
   n=+n||0;
@@ -649,12 +762,14 @@ function fmtNum(n){
   if(n>=10000) return Math.round(n/10000)+'万';
   return String(n);
 }
-function showDiscover(){
+function showDiscover(noHist){
+  closeSideDrawer();
   document.getElementById('discoverView').classList.add('show');
   document.querySelector('.detail').style.display='none';
   document.querySelector('.tracks').style.display='none';
   document.getElementById('navDiscover').classList.add('active');
   document.querySelectorAll('.side-item[data-pl]').forEach(function(e){e.classList.remove('active')});
+  if(!noHist)recView('discover');
   if(!dvLoaded) loadDiscover(false);
 }
 function hideDiscover(){
@@ -675,7 +790,7 @@ async function loadDiscover(refresh){
     if(!j.ok) throw new Error(j.error||'加载失败');
     DISCOVER=j.playlists||[];
     dvLoaded=true;
-    sub.textContent='共 '+DISCOVER.length+' 个网易云热门歌单 · 点封面即可直接播到小爱，不用下载';
+    sub.textContent='共 '+DISCOVER.length+' 个热门歌单 · 来自网易云，点封面直接播到小爱（不下载）';
     renderCats();renderDiscover();
   }catch(e){
     sub.textContent='连不上本机音乐服务';
@@ -699,7 +814,20 @@ function renderCats(){
 }
 function renderDiscover(){
   var grid=document.getElementById('dvGrid');grid.innerHTML='';
-  var list=DISCOVER.filter(function(p){return DV_CAT==='全部'||p.cat===DV_CAT});
+  var q=(DV_Q||'').trim().toLowerCase();
+  var list=DISCOVER.filter(function(p){
+    if(DV_CAT!=='全部'&&p.cat!==DV_CAT)return false;
+    if(q&&(p.name||'').toLowerCase().indexOf(q)<0)return false;
+    return true;
+  });
+  var sub=document.getElementById('dvSub');
+  if(sub){
+    if(q){sub.textContent='「'+DV_Q.trim()+'」匹配到 '+list.length+' 个歌单';}
+    else{sub.textContent='共 '+DISCOVER.length+' 个热门歌单 · 来自网易云，点封面直接播到小爱（不下载）';}
+  }
+  var emp=document.getElementById('dvEmpty');
+  if(list.length===0&&emp){emp.style.display='';emp.textContent=q?'没有匹配「'+DV_Q.trim()+'」的歌单':'这个分类暂时没有歌单'}
+  else if(emp){emp.style.display='none'}
   list.forEach(function(p){
     var c=document.createElement('div');
     c.className='dv-card';
