@@ -675,7 +675,7 @@ async function loadDiscover(refresh){
     if(!j.ok) throw new Error(j.error||'加载失败');
     DISCOVER=j.playlists||[];
     dvLoaded=true;
-    sub.textContent='共 '+DISCOVER.length+' 个热门歌单 · 点封面即可直接播到小爱，不用下载';
+    sub.textContent='共 '+DISCOVER.length+' 个网易云热门歌单 · 点封面即可直接播到小爱，不用下载';
     renderCats();renderDiscover();
   }catch(e){
     sub.textContent='连不上本机音乐服务';
