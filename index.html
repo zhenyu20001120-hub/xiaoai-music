@@ -266,7 +266,7 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
       </div>
       <div class="import-progress" id="importProg">
         <div class="st" id="progStage">准备中…</div>
-        <div class="pbar"><i id="progFill"></i></div>
+        <div class="pbar"><i id="impFill"></i></div>
       </div>
       <div class="import-result" id="importRes"></div>
     </div>
@@ -531,7 +531,7 @@ async function startImport(){
   document.getElementById('importProg').classList.add('show');
   document.getElementById('importRes').classList.remove('show');
   document.getElementById('progStage').textContent='正在解析歌单…';
-  document.getElementById('progFill').style.width='4%';
+  document.getElementById('impFill').style.width='4%';
   try{
     var r=await fetch(BRIDGE+'/local/import-playlist',{
       method:'POST',headers:{'Content-Type':'application/json'},
@@ -554,7 +554,7 @@ function pollImport(){
       var j=await r.json();
       if(!j.ok) return;
       var pct=j.total?Math.round((j.done||0)/j.total*100):6;
-      document.getElementById('progFill').style.width=Math.max(pct,4)+'%';
+      document.getElementById('impFill').style.width=Math.max(pct,4)+'%';
       document.getElementById('progStage').textContent=j.stage||'处理中…';
       if(j.status==='done'){
         clearInterval(addTimer); addTimer=null;
