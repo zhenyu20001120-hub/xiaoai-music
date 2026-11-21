@@ -487,6 +487,18 @@ function renderTracks(){
 }
 
 /* ============ 播放控制 ============ */
+var playWatch=null;
+// 推送成功后 6 秒还没往前走，说明音源拿不到，明确告诉用户
+function watchPlaying(songId){
+  if(playWatch)clearTimeout(playWatch);
+  playWatch=setTimeout(function(){
+    if(!STATUS)return;
+    var cs=STATUS.current_song||{};
+    if(String(cs.id)!==String(songId))return;
+    if(STATUS.state==='paused')return;
+    if((STATUS.position||0)<1.5) toast('这首歌取不到音源，换一首试试');
+  },6000);
+}
 async function playSong(index){
   var s=SONGS[index];if(!s)return;
   toast('正在推送：'+parseTitle(s.title).title);
@@ -494,7 +506,7 @@ async function playSong(index){
     account_id:ACC,device_id:DEV,playlist_id:CURRENT_PL,
     start_index:index,song_id:s.id,play_mode:STATUS?STATUS.play_mode:'order'
   }});
-  if(r.success){setTimeout(refreshStatus,600)}else{toast('播放失败：'+(r.error||'未知错误'))}
+  if(r.success){setTimeout(refreshStatus,600);watchPlaying(s.id)}else{toast('播放失败：'+(r.error||'未知错误'))}
 }
 async function playAll(){if(SONGS.length)playSong(0)}
 async function ctrl(path,body){
