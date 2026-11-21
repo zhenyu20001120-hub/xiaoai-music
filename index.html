@@ -448,6 +448,9 @@ document.querySelectorAll('.nav-arrows button')[1].onclick=function(){if(HPOS<HI
 async function selectPlaylist(id,noHist){
   CURRENT_PL=id;
   closeSideDrawer();
+  // 换歌单时清掉上一次的搜索词，否则会以为新歌单是空的
+  var sb=document.getElementById('search');
+  if(sb&&sb.value){sb.value='';var sh=document.getElementById('searchHint');if(sh)sh.textContent=''}
   GUARD=Date.now()+700;   // 视图刚切换，避免同一次点击"穿透"到下面的歌曲行
   hideDiscover();
   document.getElementById('navDiscover').classList.remove('active');
@@ -622,6 +625,14 @@ document.getElementById('search').addEventListener('input',function(e){
 /* 播放列表抽屉 */
 document.getElementById('btnList').onclick=function(){renderDrawer();document.getElementById('drawer').classList.add('open')};
 document.getElementById('btnCloseDrawer').onclick=function(){document.getElementById('drawer').classList.remove('open')};
+// 点抽屉外面也能关
+document.addEventListener('click',function(e){
+  var dr=document.getElementById('drawer');
+  if(!dr||!dr.classList.contains('open'))return;
+  if(dr.contains(e.target))return;
+  if(e.target.closest&&e.target.closest('#btnList'))return;
+  dr.classList.remove('open');
+});
 function renderDrawer(){
   var d=document.getElementById('drawerList');d.innerHTML='';
   document.getElementById('drawerSub').textContent=SONGS.length+' 首';
@@ -681,8 +692,9 @@ function openAddModal(){
   setTimeout(function(){document.getElementById('addUrl').focus()},120);
 }
 function closeAddModal(){
-  if(addTimer){clearInterval(addTimer);addTimer=null}
+  // 不清轮询：导入在后台继续跑完，完成时自动刷新歌单，避免"关了就当取消了"
   addModal.classList.remove('show');
+  if(addTimer) toast('导入在后台继续，完成后会出现在「我的歌单」');
 }
 async function startImport(){
   var url=document.getElementById('addUrl').value.trim();
