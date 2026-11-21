@@ -161,7 +161,31 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
 .offline.show{display:flex}
 .offline .card{text-align:center;line-height:2;color:var(--txt2)}
 .offline code{background:#e8e9ed;padding:3px 8px;border-radius:5px;font-size:13px;color:var(--red)}
+/* 发现音乐 */
+.discover-view{display:none;padding:26px 32px 44px}
+.discover-view.show{display:block}
+.dv-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:16px;gap:16px}
+.dv-title{font-size:24px;font-weight:700;letter-spacing:-.3px}
+.dv-sub{font-size:12.5px;color:var(--txt3);margin-top:7px;line-height:1.6}
+.dv-refresh{height:30px;padding:0 15px;border-radius:15px;border:1px solid var(--line);background:#fff;color:var(--txt2);font-size:12.5px;flex:none}
+.dv-refresh:hover{border-color:#d5d7dd;color:var(--txt)}
+.dv-cats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.dv-cat{height:28px;padding:0 14px;border-radius:14px;background:#f2f3f5;color:var(--txt2);font-size:12.5px;display:flex;align-items:center;cursor:pointer;user-select:none}
+.dv-cat:hover{background:#e8e9ed}
+.dv-cat.on{background:var(--red);color:#fff}
+.dv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:20px 18px}
+.dv-card{cursor:pointer;position:relative}
+.dv-cover{position:relative;width:100%;padding-top:100%;border-radius:10px;overflow:hidden;background:#f0f1f4}
+.dv-cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .45s}
+.dv-card:hover .dv-cover img{transform:scale(1.06)}
+.dv-cover .ply{position:absolute;right:9px;bottom:9px;width:31px;height:31px;border-radius:50%;background:rgba(0,0,0,.5);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;opacity:0;transition:opacity .2s}
+.dv-card:hover .ply{opacity:1}
+.dv-name{font-size:13px;line-height:1.5;margin-top:9px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;height:39px;color:var(--txt)}
+.dv-meta{font-size:11.5px;color:var(--txt3);margin-top:4px}
+.dv-card.loading .dv-cover::after{content:'准备中…';position:absolute;inset:0;background:rgba(0,0,0,.55);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12.5px;z-index:2}
+.dv-empty{padding:36px 0;color:var(--txt3);font-size:13px;line-height:1.9}
 @media(max-width:900px){.app{grid-template-columns:0 1fr}.side{display:none}.detail,.tracks{padding-left:20px;padding-right:20px}.bar{grid-template-columns:1fr 1.4fr 1fr}}
+@media(max-width:900px){.discover-view{padding:18px 20px 40px}.dv-grid{grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:16px 12px}.dv-title{font-size:20px}}
 </style>
 </head>
 <body>
@@ -187,16 +211,32 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
   <aside class="side">
     <div class="side-sec">
       <div class="side-title">推荐</div>
-      <div class="side-item active" data-view="discover"><svg class="icon" viewBox="0 0 24 24"><path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/></svg>发现音乐</div>
+      <div class="side-item active" id="navDiscover" data-view="discover"><svg class="icon" viewBox="0 0 24 24"><path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/></svg>发现音乐</div>
     </div>
     <div class="side-sec">
       <div class="side-title">我的歌单</div>
       <div id="sidePlaylists"></div>
     </div>
+    <div class="side-sec" id="sideDiscoverSec" style="display:none">
+      <div class="side-title">最近发现</div>
+      <div id="sideDiscover"></div>
+    </div>
   </aside>
 
   <!-- 主内容 -->
   <main class="main" id="main">
+    <div class="discover-view" id="discoverView">
+      <div class="dv-head">
+        <div>
+          <div class="dv-title">发现音乐</div>
+          <div class="dv-sub" id="dvSub">正在加载热门歌单…</div>
+        </div>
+        <button class="dv-refresh" id="dvRefresh">换一批</button>
+      </div>
+      <div class="dv-cats" id="dvCats"></div>
+      <div class="dv-grid" id="dvGrid"></div>
+      <div class="dv-empty" id="dvEmpty" style="display:none"></div>
+    </div>
     <div class="detail">
       <div class="pl-head">
         <img class="cover" id="plCover" alt="封面">
@@ -299,6 +339,7 @@ async function ensureToken(){
 var ACC='1227787407';
 var DEV='af46e8bc-904b-459a-b333-cc400c9b6eca';
 var CURRENT_PL=4;           // 当前显示的歌单
+var GUARD=0;                // 视图切换后的短暂防误触时间戳
 var SONGS=[];               // 当前歌单歌曲
 var STATUS=null;           // 播放器状态
 var PLAYLISTS=[];           // 所有歌单
@@ -336,19 +377,26 @@ async function loadPlaylists(){
   if(!r.success){showOffline();return}
   PLAYLISTS=r.data||[];
   var box=document.getElementById('sidePlaylists');box.innerHTML='';
+  var dbox=document.getElementById('sideDiscover');dbox.innerHTML='';
   PLAYLISTS.forEach(function(pl){
+    var isDisc=(pl.name||'').indexOf('发现 · ')===0;
     var d=document.createElement('div');
     d.className='side-item'+(pl.id===CURRENT_PL?' active':'');
     d.setAttribute('data-pl',pl.id);
-    d.innerHTML='<span class="pl-ico"></span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(pl.name)+'</span><span class="cnt">'+(pl.song_count||0)+'</span>';
+    if(isDisc)d.setAttribute('data-disc','1');
+    d.innerHTML='<span class="pl-ico"></span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(pl.name.replace(/^发现 · /,''))+'</span><span class="cnt">'+(pl.song_count||0)+'</span>';
     d.onclick=function(){selectPlaylist(pl.id)};
-    box.appendChild(d);
+    (isDisc?dbox:box).appendChild(d);
   });
+  document.getElementById('sideDiscoverSec').style.display=dbox.children.length?'':'none';
 }
 
 /* ============ 歌单详情 ============ */
 async function selectPlaylist(id){
   CURRENT_PL=id;
+  GUARD=Date.now()+700;   // 视图刚切换，避免同一次点击"穿透"到下面的歌曲行
+  hideDiscover();
+  document.getElementById('navDiscover').classList.remove('active');
   document.querySelectorAll('.side-item[data-pl]').forEach(function(e){e.classList.toggle('active',+e.getAttribute('data-pl')===id)});
   var pl=PLAYLISTS.find(function(p){return p.id===id});
   if(pl){
@@ -375,7 +423,7 @@ function renderTracks(){
       '<span class="artist">'+esc(p.artist||'—')+'</span>'+
       '<span class="dur">'+fmt(s.duration)+'</span>';
     row.ondblclick=function(){playSong(i)};
-    row.onclick=function(){playSong(i)};
+    row.onclick=function(){if(Date.now()<GUARD)return;playSong(i)};
     list.appendChild(row);
   });
 }
@@ -592,6 +640,99 @@ document.getElementById('addUrl').addEventListener('keydown',function(e){
   if(e.key==='Enter') startImport();
 });
 
+/* ============ 发现音乐 ============ */
+var DISCOVER=[], DV_CAT='全部', dvLoaded=false;
+
+function fmtNum(n){
+  n=+n||0;
+  if(n>=100000000) return (n/100000000).toFixed(1)+'亿';
+  if(n>=10000) return Math.round(n/10000)+'万';
+  return String(n);
+}
+function showDiscover(){
+  document.getElementById('discoverView').classList.add('show');
+  document.querySelector('.detail').style.display='none';
+  document.querySelector('.tracks').style.display='none';
+  document.getElementById('navDiscover').classList.add('active');
+  document.querySelectorAll('.side-item[data-pl]').forEach(function(e){e.classList.remove('active')});
+  if(!dvLoaded) loadDiscover(false);
+}
+function hideDiscover(){
+  var dv=document.getElementById('discoverView');
+  if(!dv) return;
+  dv.classList.remove('show');
+  document.querySelector('.detail').style.display='';
+  document.querySelector('.tracks').style.display='';
+}
+async function loadDiscover(refresh){
+  var sub=document.getElementById('dvSub');
+  if(refresh) document.getElementById('dvGrid').innerHTML='';
+  sub.textContent='正在加载热门歌单…';
+  document.getElementById('dvEmpty').style.display='none';
+  try{
+    var r=await fetch(BRIDGE+'/local/discover'+(refresh?'?refresh=1':''));
+    var j=await r.json();
+    if(!j.ok) throw new Error(j.error||'加载失败');
+    DISCOVER=j.playlists||[];
+    dvLoaded=true;
+    sub.textContent='共 '+DISCOVER.length+' 个热门歌单 · 点封面即可直接播到小爱，不用下载';
+    renderCats();renderDiscover();
+  }catch(e){
+    sub.textContent='连不上本机音乐服务';
+    var em=document.getElementById('dvEmpty');
+    em.style.display='block';
+    em.innerHTML='请确认电脑上的「小爱音乐台」服务正在运行（开机自启已包含）。<br>错误：'+esc(e.message||'');
+  }
+}
+function renderCats(){
+  var box=document.getElementById('dvCats');
+  var cats=['全部'];
+  DISCOVER.forEach(function(p){if(p.cat&&p.cat!=='全部'&&cats.indexOf(p.cat)<0)cats.push(p.cat)});
+  box.innerHTML='';
+  cats.forEach(function(c){
+    var d=document.createElement('div');
+    d.className='dv-cat'+(c===DV_CAT?' on':'');
+    d.textContent=c;
+    d.onclick=function(){DV_CAT=c;renderCats();renderDiscover()};
+    box.appendChild(d);
+  });
+}
+function renderDiscover(){
+  var grid=document.getElementById('dvGrid');grid.innerHTML='';
+  var list=DISCOVER.filter(function(p){return DV_CAT==='全部'||p.cat===DV_CAT});
+  list.forEach(function(p){
+    var c=document.createElement('div');
+    c.className='dv-card';
+    c.innerHTML='<div class="dv-cover"><img loading="lazy" src="'+esc(p.cover||'')+'" alt=""><span class="ply">▶</span></div>'+
+      '<div class="dv-name" title="'+esc(p.name)+'">'+esc(p.name)+'</div>'+
+      '<div class="dv-meta">'+fmtNum(p.play_count)+' 次播放 · '+(p.track_count||0)+' 首</div>';
+    c.onclick=function(){openDiscoverPl(p,c)};
+    grid.appendChild(c);
+  });
+}
+async function openDiscoverPl(p,card){
+  if(card&&card.classList.contains('loading'))return;
+  if(card)card.classList.add('loading');
+  try{
+    var r=await fetch(BRIDGE+'/local/discover/play',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({id:p.id,name:p.name})
+    });
+    var j=await r.json();
+    if(!j.ok) throw new Error(j.error||'准备失败');
+    hideDiscover();
+    await loadPlaylists();
+    await selectPlaylist(j.playlist_id);
+    toast('《'+j.name+'》'+j.count+' 首已就绪，点歌播到小爱');
+  }catch(e){
+    toast('打开失败：'+(e.message||''));
+  }finally{
+    if(card)card.classList.remove('loading');
+  }
+}
+document.getElementById('navDiscover').onclick=showDiscover;
+document.getElementById('dvRefresh').onclick=function(){toast('正在换一批…');loadDiscover(true)};
+
 /* ============ 桥接地址设置 ============ */
 document.getElementById('btnBridge').onclick=function(){
   var v=prompt('本机桥接地址（一般不用改；换电脑/换网络时填运行服务的那台电脑的IP）:',BRIDGE);
@@ -608,7 +749,16 @@ document.getElementById('btnBridge').title='当前桥接: '+BRIDGE;
   if(!r.success){showOffline();return}
   document.getElementById('offline').classList.remove('show');
   await loadPlaylists();
-  await selectPlaylist(CURRENT_PL);
+  // 默认选中：优先上次的歌单，不存在就落到第一个有歌的歌单
+  if(!PLAYLISTS.some(function(p){return p.id===CURRENT_PL})){
+    var first=PLAYLISTS.filter(function(p){return (p.song_count||0)>0})[0]||PLAYLISTS[0];
+    CURRENT_PL=first?first.id:null;
+  }
+  if(location.hash==='#discover'||!CURRENT_PL){
+    showDiscover();
+  }else{
+    await selectPlaylist(CURRENT_PL);
+  }
   await refreshStatus();
   setInterval(refreshStatus,1500);
 })();
