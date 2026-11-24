@@ -283,8 +283,10 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
 <div class="offline" id="offline"><div class="card">
   <div style="font-size:40px;margin-bottom:8px">🎵</div>
   <div style="font-size:18px;color:#333;font-weight:600">连不上小爱音乐服务</div>
-  <div>请确认本机「打开小爱音箱」服务和桥接服务在运行，再刷新本页</div>
-  <div style="font-size:12px;color:#999">或访问 <code id="offurl"></code></div>
+  <div>本机服务没在运行。点下面的按钮一键启动，等几秒会自动连上。</div>
+  <div style="margin:18px 0 6px"><button id="btnStartSvc" style="font-size:15px;font-weight:600;color:#fff;background:var(--red,#e83c3c);border:0;border-radius:24px;padding:11px 30px;cursor:pointer">一键启动本机服务</button></div>
+  <div id="startHint" style="font-size:12px;color:#999;min-height:18px">首次会在浏览器弹窗问「是否打开此应用」，请点「打开」</div>
+  <div style="font-size:12px;color:#999;margin-top:6px">若已装过仍不行，请在本机双击项目文件夹里的 <code>开机自启-勿删.vbs</code></div>
 </div></div>
 
 <div class="app">
@@ -852,6 +854,26 @@ function showOffline(extra){
   document.getElementById('offurl').textContent=BRIDGE+P+'/static/goto.html';
 }
 function failAll(msg){toast(msg);showOffline()}
+
+/* 一键启动本机服务：触发已注册的 xiaomusic:// 协议 → 守护进程常驻并拉起 58091/58092 */
+var START_POLL=null;
+document.getElementById('btnStartSvc').onclick=function(){
+  var hint=document.getElementById('startHint');
+  hint.textContent='已发送启动请求… 若浏览器弹窗请点「打开」，正在等待服务就绪';
+  try{location.href='xiaomusic://start'}catch(e){}
+  var n=0;
+  if(START_POLL)clearInterval(START_POLL);
+  START_POLL=setInterval(async function(){
+    n++;
+    try{
+      var r=await fetch(BRIDGE+'/local/ping',{cache:'no-store'});
+      if(r.ok){clearInterval(START_POLL);START_POLL=null;hint.textContent='连上了，正在进入…';setTimeout(function(){location.reload()},600);return}
+    }catch(e){}
+    if(n>30){clearInterval(START_POLL);START_POLL=null;
+      hint.innerHTML='还没连上。请确认这是运行小爱服务的那台电脑，然后在浏览器弹窗点「打开」';}
+    else hint.textContent='正在等待服务就绪… ('+n+'/30)';
+  },2000);
+};
 
 /* ============ 添加网易云歌单 ============ */
 var addJobId=null, addTimer=null;
