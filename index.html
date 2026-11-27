@@ -34,6 +34,17 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
 .spk-badge{display:flex;align-items:center;gap:6px;font-size:12px;color:#1a9c6b;background:#eafaf2;padding:6px 11px;border-radius:14px;font-weight:600}
 .spk-badge .dot{width:7px;height:7px;border-radius:50%;background:#1ac583}
 
+/* ============ 服务开关（开启 / 关闭） ============ */
+.svc-btn{display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 11px;border-radius:14px;border:0;background:#f0f1f4;color:#666;font-size:11.5px;font-weight:600;font-family:inherit;cursor:pointer;flex:none;white-space:nowrap;transition:background .15s,color .15s}
+.svc-btn i{font-style:normal;font-size:9px;line-height:1;position:relative;top:-.5px}
+.svc-btn:disabled{cursor:default}
+.svc-btn.on{background:#e8f7ee;color:#0a8f4a}            /* 已经是这个状态 */
+.svc-btn.go{background:#1a9c6b;color:#fff}              /* 可点：去开启 */
+.svc-btn.go:hover{background:#158357}
+.svc-btn.stop{background:#fdf0f0;color:#c0392b}         /* 可点：去关闭 */
+.svc-btn.stop:hover{background:#fbe3e3}
+.svc-btn.off{background:#f4f5f8;color:#b9bec7}          /* 不可用 */
+
 /* ============ 添加歌单 ============ */
 .btn-add{display:flex;align-items:center;gap:5px;height:34px;padding:0 14px;border-radius:17px;border:1px solid #f2c2c2;background:#fff6f6;color:var(--red);font-size:13px;font-weight:600;flex:none;white-space:nowrap}
 .btn-add:hover{background:#ffecec;border-color:var(--red)}
@@ -275,6 +286,8 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
   .bar{grid-template-columns:1fr 1.4fr 1fr;padding:0 12px;gap:10px}
   .bar-left .bar-song{max-width:120px}
   .spk-badge span:last-child{display:none}
+  .svc-btn span{display:none}
+  .svc-btn{padding:0 8px}
 }
 @media(max-width:900px){.discover-view{padding:18px 20px 40px}.dv-grid{grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:16px 12px}.dv-title{font-size:20px}}
 </style>
@@ -282,11 +295,11 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
 <body>
 <div class="offline" id="offline"><div class="card">
   <div style="font-size:40px;margin-bottom:8px">🎵</div>
-  <div style="font-size:18px;color:#333;font-weight:600">连不上小爱音乐服务</div>
-  <div>本机服务没在运行。点下面的按钮一键启动，等几秒会自动连上。</div>
+  <div style="font-size:18px;color:#333;font-weight:600" id="offTitle">连不上小爱音乐服务</div>
+  <div id="offDesc">本机服务没在运行。点下面的按钮一键启动，等几秒会自动连上。</div>
   <div style="margin:18px 0 6px"><button id="btnStartSvc" style="font-size:15px;font-weight:600;color:#fff;background:var(--red,#e83c3c);border:0;border-radius:24px;padding:11px 30px;cursor:pointer">一键启动本机服务</button></div>
   <div id="startHint" style="font-size:12px;color:#999;min-height:18px">首次会在浏览器弹窗问「是否打开此应用」，请点「打开」</div>
-  <div style="font-size:12px;color:#999;margin-top:6px">若已装过仍不行，请在本机双击项目文件夹里的 <code>开机自启-勿删.vbs</code></div>
+  <div style="font-size:12px;color:#999;margin-top:6px">也可以在本机双击项目文件夹里的 <code>点歌给小爱音箱.html</code>（开关面板）</div>
 </div></div>
 
 <div class="app">
@@ -299,6 +312,8 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
     <div class="search"><svg class="icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input id="search" placeholder="搜索当前歌单 / 发现页搜歌单"></div>
     <button class="btn-add" id="btnAddPl" title="粘贴网易云歌单链接，自动下载并加入左侧歌单"><span class="plus">＋</span>添加歌单</button>
     <div class="spk-badge"><span class="dot"></span><span id="spkName">小爱音箱</span></div>
+    <button class="svc-btn on" id="btnSvcOn" disabled title="一键开启本机音乐服务（守护 + 桥接 + 主服务）"><i>▶</i><span>开启服务</span></button>
+    <button class="svc-btn stop" id="btnSvcOff" title="一键关闭本机音乐服务，音箱和网页都会断开"><i>■</i><span>关闭服务</span></button>
     <button id="btnBridge" title="点击修改本机桥接地址" style="font-size:11px;color:#888;background:#f0f1f4;padding:5px 10px;border-radius:12px">本机连接</button>
   </div>
 
@@ -855,25 +870,89 @@ function showOffline(extra){
 }
 function failAll(msg){toast(msg);showOffline()}
 
-/* 一键启动本机服务：触发已注册的 xiaomusic:// 协议 → 守护进程常驻并拉起 58091/58092 */
+/* ============ 服务开关：开启 / 关闭 ============ */
+var SVC_ON=document.getElementById('btnSvcOn');
+var SVC_OFF=document.getElementById('btnSvcOff');
 var START_POLL=null;
-document.getElementById('btnStartSvc').onclick=function(){
-  var hint=document.getElementById('startHint');
-  hint.textContent='已发送启动请求… 若浏览器弹窗请点「打开」，正在等待服务就绪';
-  try{location.href='xiaomusic://start'}catch(e){}
+
+function svcPaint(running){
+  running=!!running;
+  if(SVC_ON){ SVC_ON.disabled=running; SVC_ON.className='svc-btn '+(running?'on':'go'); }
+  if(SVC_OFF){ SVC_OFF.disabled=!running; SVC_OFF.className='svc-btn '+(running?'stop':'off'); }
+}
+
+async function svcRunning(){
+  try{
+    var r=await fetch(BRIDGE+'/local/service/status',{cache:'no-store'});
+    if(!r.ok) return false;
+    var d=await r.json();
+    return !!d.running;
+  }catch(e){ return false; }
+}
+
+/* 轮询直到服务就绪 */
+function svcWaitReady(times, cb){
   var n=0;
-  if(START_POLL)clearInterval(START_POLL);
+  if(START_POLL) clearInterval(START_POLL);
   START_POLL=setInterval(async function(){
     n++;
-    try{
-      var r=await fetch(BRIDGE+'/local/ping',{cache:'no-store'});
-      if(r.ok){clearInterval(START_POLL);START_POLL=null;hint.textContent='连上了，正在进入…';setTimeout(function(){location.reload()},600);return}
-    }catch(e){}
-    if(n>30){clearInterval(START_POLL);START_POLL=null;
-      hint.innerHTML='还没连上。请确认这是运行小爱服务的那台电脑，然后在浏览器弹窗点「打开」';}
-    else hint.textContent='正在等待服务就绪… ('+n+'/30)';
-  },2000);
+    var ok=false;
+    try{ var r=await fetch(BRIDGE+'/local/ping',{cache:'no-store'}); ok=r.ok; }catch(e){}
+    if(ok){ clearInterval(START_POLL); START_POLL=null; cb(true,n); return; }
+    if(n>=times){ clearInterval(START_POLL); START_POLL=null; cb(false,n); }
+  },1500);
+}
+
+/* 开启：桥接还活着就发 HTTP（无弹窗）；桥接死了才退回 xiaomusic:// 协议 */
+window.svcStart=async function(){
+  var hint=document.getElementById('startHint');
+  if(SVC_ON) SVC_ON.disabled=true;
+  var alive=false;
+  try{ var r=await fetch(BRIDGE+'/local/ping',{cache:'no-store'}); alive=r.ok; }catch(e){}
+  if(alive){
+    try{ await fetch(BRIDGE+'/local/service/start',{method:'POST'}); }catch(e){}
+    if(hint) hint.textContent='已发出启动请求，正在等待服务就绪…';
+  }else{
+    if(hint) hint.textContent='已发送启动请求… 若浏览器弹窗请点「打开」，正在等待服务就绪';
+    try{ location.href='xiaomusic://start'; }catch(e){}
+  }
+  svcWaitReady(24,function(ok,n){
+    if(ok){
+      if(hint) hint.textContent='连上了，正在进入…';
+      setTimeout(function(){ location.reload(); },600);
+    }else{
+      if(hint) hint.innerHTML='还没连上。请确认这是运行小爱服务的那台电脑，并在浏览器弹窗点「打开」';
+      svcPaint(false);
+    }
+  });
 };
+
+if(SVC_ON) SVC_ON.onclick=function(){ window.svcStart(); };
+
+if(SVC_OFF) SVC_OFF.onclick=async function(){
+  if(!confirm('关闭后音箱会立刻停止，这个网页也会断开。\n想再听歌，回来点「开启服务」就行。\n\n确定关闭？')) return;
+  SVC_OFF.disabled=true;
+  try{ await fetch(BRIDGE+'/local/service/stop',{method:'POST'}); }catch(e){}
+  toast('正在关闭服务…');
+  await new Promise(function(res){ setTimeout(res,1200); });
+  for(var i=0;i<12;i++){
+    var alive=true;
+    try{ var p=await fetch(BRIDGE+'/local/ping',{cache:'no-store'}); alive=p.ok; }catch(e){ alive=false; }
+    if(!alive) break;
+    await new Promise(function(res){ setTimeout(res,800); });
+  }
+  var t=document.getElementById('offTitle'), d=document.getElementById('offDesc');
+  if(t) t.textContent='服务已关闭';
+  if(d) d.textContent='这是你刚才手动关掉的。想继续听歌，点下面的按钮重新开启。';
+  document.getElementById('offline').classList.add('show');
+  svcPaint(false);
+};
+
+/* 断连卡片里的「一键启动本机服务」走同一套逻辑 */
+document.getElementById('btnStartSvc').onclick=function(){ window.svcStart(); };
+
+/* 进页面同步一次按钮状态 */
+svcRunning().then(svcPaint).catch(function(){ svcPaint(false); });
 
 /* ============ 添加网易云歌单 ============ */
 var addJobId=null, addTimer=null;
