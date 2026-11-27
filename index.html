@@ -866,7 +866,8 @@ async function refreshStatus(){
 
 function showOffline(extra){
   document.getElementById('offline').classList.add('show');
-  document.getElementById('offurl').textContent=BRIDGE+P+'/static/goto.html';
+  var o=document.getElementById('offurl');
+  if(o) o.textContent=BRIDGE+P+'/static/goto.html';
 }
 function failAll(msg){toast(msg);showOffline()}
 
