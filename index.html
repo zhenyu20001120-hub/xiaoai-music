@@ -267,6 +267,58 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
 .av-album-head .t{font-size:21px;font-weight:700;line-height:1.3}
 .av-album-head .s{font-size:12.5px;color:var(--txt3);margin-top:8px;line-height:1.6}
 
+/* ============ 我喜欢 / 收藏到歌单 / 编辑歌单 ============ */
+.track .tacts{margin-left:auto;display:flex;align-items:center;gap:5px;flex:none}
+.track .tacts+.tgo{margin-left:2px}
+.tact{width:28px;height:28px;border-radius:50%;border:0;background:transparent;color:#b9bdc6;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;transition:background .15s,color .15s;flex:none}
+.tact svg{width:16px;height:16px;display:block}
+.tact.heart svg{fill:none;stroke:currentColor;stroke-width:1.9;stroke-linejoin:round}
+.tact.heart.on{color:var(--red)}
+.tact.heart.on svg{fill:currentColor;stroke:currentColor}
+.tact.plus svg{fill:currentColor}
+.tact:hover{background:#fdeeee;color:var(--red)}
+.side-item .pl-edit{width:20px;height:20px;border-radius:4px;flex:none;display:flex;align-items:center;justify-content:center;color:#b6bac2;opacity:.4;transition:.15s;font-size:12px}
+.side-item:hover .pl-edit{opacity:1}
+.side-item .pl-edit:hover{background:#eceef2;color:var(--red)}
+.side-item .pl-edit svg{width:13px;height:13px;fill:currentColor}
+.pick-song{font-size:13px;color:var(--txt2);background:#f6f7f9;border-radius:8px;padding:10px 12px;margin-bottom:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pick-new{display:flex;gap:8px;margin-bottom:12px}
+.pick-new input{flex:1;height:36px;border:1px solid var(--line);border-radius:8px;padding:0 12px;font-size:13px;font-family:inherit;outline:0;color:var(--txt);min-width:0}
+.pick-new input:focus{border-color:var(--red)}
+.pick-new button{height:36px;padding:0 15px;border-radius:8px;font-size:13px;font-weight:600;background:var(--red);color:#fff;border:0;cursor:pointer;flex:none;font-family:inherit}
+.pick-new button:hover{background:var(--red-d)}
+.pick-list{max-height:300px;overflow:auto;border:1px solid var(--line);border-radius:9px}
+.pick-item{display:flex;align-items:center;gap:10px;padding:11px 13px;font-size:13.5px;cursor:pointer;border-bottom:1px solid #f2f3f5}
+.pick-item:last-child{border-bottom:0}
+.pick-item:hover{background:#fdf3f3}
+.pick-item .ic{width:26px;height:26px;border-radius:6px;background:linear-gradient(135deg,#ff9a9e,#fecfef);flex:none}
+.pick-item .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pick-item .ct{font-size:11.5px;color:var(--txt3);flex:none}
+.pick-tip{font-size:11.5px;color:var(--txt3);margin-top:10px;line-height:1.7}
+.edit-name{display:flex;gap:8px}
+.edit-name input{flex:1;height:40px;border:1px solid var(--line);border-radius:8px;padding:0 12px;font-size:14px;font-family:inherit;outline:0;color:var(--txt);min-width:0}
+.edit-name input:focus{border-color:var(--red)}
+.edit-name button{height:40px;padding:0 16px;border-radius:8px;border:0;background:var(--red);color:#fff;font-size:13px;font-weight:600;cursor:pointer;flex:none;font-family:inherit}
+.edit-name button:hover{background:var(--red-d)}
+.edit-sub{font-size:12px;color:var(--txt3);margin:10px 0 12px}
+.edit-search{margin-bottom:12px}
+.edit-search input{width:100%;height:38px;border:1px solid var(--line);border-radius:8px;padding:0 12px;font-size:13px;font-family:inherit;outline:0;color:var(--txt)}
+.edit-search input:focus{border-color:var(--red)}
+.edit-res{max-height:210px;overflow:auto;margin-top:8px;border:1px solid var(--line);border-radius:8px;display:none}
+.edit-res.show{display:block}
+.edit-songs{max-height:300px;overflow:auto;border:1px solid var(--line);border-radius:9px}
+.es-row{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid #f2f3f5;font-size:13px}
+.es-row:last-child{border-bottom:0}
+.es-row:hover{background:#fafbfc}
+.es-nm{flex:1;min-width:0;display:flex;align-items:baseline;gap:8px;overflow:hidden}
+.es-nm b{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.es-nm i{font-style:normal;color:var(--txt3);font-size:11.5px;flex:none;max-width:45%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.es-del{width:24px;height:24px;border-radius:50%;border:0;background:transparent;color:#b9bdc6;font-size:16px;line-height:1;cursor:pointer;flex:none}
+.es-del:hover{background:#fdeeee;color:var(--red)}
+.es-add{width:26px;height:26px;border-radius:50%;border:1px solid #e3e5ea;background:#fff;color:#8a8f99;font-size:15px;line-height:1;cursor:pointer;flex:none}
+.es-add:hover{border-color:var(--red);color:var(--red)}
+.es-loading{padding:16px 12px;font-size:12.5px;color:var(--txt3);text-align:center}
+
 @media(max-width:900px){
   .app{grid-template-columns:0 1fr}
   .track-grid{grid-template-columns:1fr;gap:4px}
@@ -450,6 +502,41 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
   </div>
 </div>
 
+<!-- 收藏到歌单 -->
+<div class="modal" id="pickModal">
+  <div class="modal-card" style="width:440px">
+    <div class="modal-h"><span>收藏到歌单</span><button class="x" id="pickClose" title="关闭">×</button></div>
+    <div class="modal-b">
+      <div class="pick-song" id="pickSong">—</div>
+      <div class="pick-new">
+        <input type="text" id="pickNewName" placeholder="新建歌单名称" maxlength="40" spellcheck="false">
+        <button id="pickNewGo">新建</button>
+      </div>
+      <div class="pick-list" id="pickList"></div>
+      <div class="pick-tip">点一下歌单名就把这首歌加进去；点「新建」会先建歌单，再把这首加进去。</div>
+    </div>
+  </div>
+</div>
+
+<!-- 编辑歌单 -->
+<div class="modal" id="editModal">
+  <div class="modal-card" style="width:620px">
+    <div class="modal-h"><span>编辑歌单</span><button class="x" id="editClose" title="关闭">×</button></div>
+    <div class="modal-b">
+      <div class="edit-name">
+        <input type="text" id="editName" maxlength="60" spellcheck="false" placeholder="歌单名称">
+        <button id="editSave">保存名字</button>
+      </div>
+      <div class="edit-sub" id="editSub">共 0 首</div>
+      <div class="edit-search">
+        <input type="text" id="editSearch" placeholder="搜索曲库加歌：歌名或歌手，边打边搜" spellcheck="false">
+        <div class="edit-res" id="editRes"></div>
+      </div>
+      <div class="edit-songs" id="editSongs"></div>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ============ 基础：token / API ============ */
 var qs=new URLSearchParams(location.search);
@@ -534,8 +621,11 @@ async function loadPlaylists(){
     d.className='side-item'+(pl.id===CURRENT_PL?' active':'');
     d.setAttribute('data-pl',pl.id);
     if(isDisc)d.setAttribute('data-disc','1');
-    d.innerHTML='<span class="pl-ico"></span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(pl.name.replace(/^发现 · /,''))+'</span><span class="cnt">'+(pl.song_count||0)+'</span>';
+    d.innerHTML='<span class="pl-ico"></span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(pl.name.replace(/^发现 · /,''))+'</span><span class="cnt">'+(pl.song_count||0)+'</span>'+
+      ((isDisc||pl.type==='radio')?'':'<span class="pl-edit" title="编辑歌单（改名 / 加歌 / 移歌）"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></span>');
     d.onclick=function(){selectPlaylist(pl.id)};
+    var ed=d.querySelector('.pl-edit');
+    if(ed)ed.onclick=function(ev){ev.stopPropagation();openPlEdit(pl)};
     (isDisc?dbox:box).appendChild(d);
   });
   document.getElementById('sideDiscoverSec').style.display=dbox.children.length?'':'none';
@@ -608,6 +698,7 @@ function renderTracks(){
     var alName=s.album||meta[1]||'';
     var cur=STATUS&&STATUS.current_song&&STATUS.current_song.id===s.id&&STATUS.is_playing;
     var cov=COVER_MAP[s.id]||COVER_MAP[String(s.id)]||'';
+    remember(s);
     var row=document.createElement('div');
     row.className='track'+(cur?' playing':'');
     row.innerHTML=
@@ -619,6 +710,7 @@ function renderTracks(){
         '<div class="tname"><span class="tx">'+esc(p.title)+'</span>'+(s.type==='remote'?'<span class="sq">SQ</span>':'')+'</div>'+
         '<div class="tsub"><span class="ar">'+esc(arName)+'</span>'+(alName?'<span class="al">'+esc(alName)+'</span>':'')+'<span class="dd">'+fmt(s.duration)+'</span></div>'+
       '</div>'+
+      actsHtml({sid:s.id,title:p.title,artist:arName,album:alName,duration:s.duration})+
       '<span class="tgo'+(cur?' on':'')+'">'+(cur?'<span class="eq"><i></i><i></i><i></i></span>':'▶')+'</span>';
     row.ondblclick=function(){playSong(i)};
     row.onclick=function(){if(Date.now()<GUARD)return;playSong(i)};
@@ -641,6 +733,289 @@ async function loadCovers(){
     if(tip)tip.textContent='封面服务未连接';
   }
 }
+
+/* ============ 我喜欢 / 收藏到歌单 / 编辑歌单 ============ */
+var LIKES=new Set();      // 「我喜欢」里的 songloft 歌曲 id（统一存字符串）
+var LIKES_PL=1;           // 内置「收藏 = 我喜欢的歌曲」歌单 id
+var SONG_MAP={};          // 最近渲染过的歌曲，弹窗里显示标题用
+var ACT_SEQ=0, ACT_MAP={};
+
+function remember(s){
+  if(!s||s.id==null)return;
+  SONG_MAP[String(s.id)]={id:s.id,title:s.title||s.name||'',artist:s.artist||'',album:s.album||'',duration:s.duration||0};
+}
+async function postJSON(path,body){
+  try{
+    var r=await fetch(BRIDGE+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body||{})});
+    return await r.json();
+  }catch(e){return {ok:false,error:'连不上本机服务，确认桥接在跑'}}
+}
+async function loadLikes(){
+  try{
+    var j=await (await fetch(BRIDGE+'/local/likes',{cache:'no-store'})).json();
+    if(j&&j.ok){LIKES_PL=j.playlist_id||1;LIKES=new Set((j.ids||[]).map(String));paintHearts()}
+  }catch(e){}
+}
+function isLiked(id){return LIKES.has(String(id))}
+function heartSvg(){return '<svg viewBox="0 0 24 24"><path d="M12 20.7l-1.28-1.17C5.9 15.24 3 12.6 3 9.35 3 6.7 5.1 4.6 7.75 4.6c1.5 0 2.95.7 4.25 2.05C13.3 5.3 14.75 4.6 16.25 4.6 18.9 4.6 21 6.7 21 9.35c0 3.25-2.9 5.89-7.72 10.18L12 20.7z"/></svg>'}
+function plusSvg(){return '<svg viewBox="0 0 24 24"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/></svg>'}
+function actsHtml(o){
+  var k='a'+(++ACT_SEQ);
+  ACT_MAP[k]={sid:(o.sid==null?null:String(o.sid)),nid:(o.nid==null?null:String(o.nid)),
+              title:o.title||'',artist:o.artist||'',album:o.album||'',duration:o.duration||0};
+  var liked=o.sid!=null&&isLiked(o.sid);
+  return '<span class="tacts">'+
+    '<button class="tact heart'+(liked?' on':'')+'" data-act="'+k+'" data-role="heart" title="喜欢 / 取消喜欢">'+heartSvg()+'</button>'+
+    '<button class="tact plus" data-act="'+k+'" data-role="plus" title="收藏到歌单">'+plusSvg()+'</button>'+
+  '</span>';
+}
+function paintHearts(){
+  document.querySelectorAll('.tact.heart').forEach(function(b){
+    var a=ACT_MAP[b.getAttribute('data-act')];
+    b.classList.toggle('on',!!(a&&a.sid!=null&&isLiked(a.sid)));
+  });
+  var bh=document.getElementById('btnHeart');
+  var cs=STATUS&&STATUS.current_song;
+  if(bh)bh.classList.toggle('on',!!(cs&&isLiked(cs.id)));
+}
+async function resolveActSong(a){
+  if(!a)return null;
+  if(a.sid!=null)return a.sid;
+  if(a.nid==null)return null;
+  var j=await postJSON('/local/song/ensure',{id:a.nid,title:a.title,artist:a.artist,album:a.album,duration:a.duration});
+  if(j&&j.ok&&j.song_id){
+    a.sid=String(j.song_id);
+    // 刚解析出来的 id，顺手同步一次喜欢状态，免得点成"再加一次"
+    if(!a.checked){
+      a.checked=true;
+      try{
+        var r=await api('/player/favorite/status?song_id='+a.sid);
+        if(r.success&&r.data){
+          if(r.data.is_favorited)LIKES.add(a.sid);else LIKES.delete(a.sid);
+          paintHearts();
+        }
+      }catch(e){}
+    }
+    return a.song_id;
+  }
+  toast((j&&j.error)||'这首歌还没建档，先播一次再收藏');
+  return null;
+}
+async function toggleLike(id){
+  if(id==null)return;
+  var key=String(id);
+  if(LIKE_BUSY[key])return;          // 连点保护：同一条歌同时只发一次
+  LIKE_BUSY[key]=1;
+  var wasLiked=isLiked(key);
+  // 先乐观更新，点下去立刻见红心，再等服务端确认
+  if(wasLiked)LIKES.delete(key);else LIKES.add(key);
+  paintHearts();
+  try{
+    var j=await postJSON('/local/like',{song_id:id,action:wasLiked?'remove':'add'});
+    if(!j||!j.ok){
+      if(wasLiked)LIKES.add(key);else LIKES.delete(key);
+      paintHearts();
+      toast((j&&j.error)||'操作失败');
+      return;
+    }
+    if(j.is_favorited)LIKES.add(key);else LIKES.delete(key);
+    if(j.playlist_id)LIKES_PL=j.playlist_id;
+    paintHearts();
+    bumpPlCount(LIKES_PL,j.is_favorited?1:-1);
+    toast(j.is_favorited?'已加入「我喜欢」':'已取消喜欢');
+  }finally{
+    delete LIKE_BUSY[key];
+  }
+}
+var LIKE_BUSY={};
+function bumpPlCount(pid,d){
+  var pl=PLAYLISTS.find(function(x){return String(x.id)===String(pid)});
+  if(!pl)return;
+  pl.song_count=Math.max(0,(pl.song_count||0)+d);
+  var el=document.querySelector('.side-item[data-pl="'+pid+'"] .cnt');
+  if(el)el.textContent=pl.song_count;
+}
+document.addEventListener('click',function(e){
+  var t=e.target;
+  var h=(t&&t.closest)?t.closest('.tact'):null;
+  if(!h)return;
+  e.preventDefault();e.stopPropagation();
+  var a=ACT_MAP[h.getAttribute('data-act')];
+  if(!a)return;
+  var isHeart=h.getAttribute('data-role')==='heart';
+  if(a.sid!=null){
+    if(isHeart)toggleLike(a.sid);else openPicker(a.sid,a);
+    return;
+  }
+  resolveActSong(a).then(function(sid){
+    if(sid==null)return;
+    if(isHeart)toggleLike(sid);else openPicker(sid,a);
+  });
+},true);
+
+/* ---- 收藏到歌单 ---- */
+var PICK_SONG=null;
+function pickableLists(){
+  return (PLAYLISTS||[]).filter(function(p){
+    return (p.name||'').indexOf('发现 · ')!==0 && p.type!=='radio';
+  });
+}
+function openPicker(sid,a){
+  PICK_SONG=sid;
+  var m=SONG_MAP[String(sid)]||{};
+  var title=(a&&a.title)||m.title||('#'+sid);
+  var artist=(a&&a.artist)||m.artist||'';
+  document.getElementById('pickSong').textContent='《'+title+'》'+(artist?' · '+artist:'');
+  document.getElementById('pickNewName').value='';
+  renderPickList();
+  document.getElementById('pickModal').classList.add('show');
+  setTimeout(function(){try{document.getElementById('pickNewName').focus()}catch(e){}},60);
+}
+function closePicker(){document.getElementById('pickModal').classList.remove('show')}
+function renderPickList(){
+  var box=document.getElementById('pickList');box.innerHTML='';
+  var lists=pickableLists();
+  if(!lists.length){box.innerHTML='<div class="es-loading">还没有自建歌单，在下面输入名字新建一个</div>';return}
+  lists.forEach(function(pl){
+    var d=document.createElement('div');
+    d.className='pick-item';
+    d.innerHTML='<span class="ic"></span><span class="nm">'+esc(pl.name)+'</span><span class="ct">'+(pl.song_count||0)+' 首</span>';
+    d.onclick=function(){addToPl(pl.id)};
+    box.appendChild(d);
+  });
+}
+async function addToPl(pid,opt){
+  if(PICK_SONG==null)return false;
+  var j=await postJSON('/local/playlist/songs/add',{id:pid,song_ids:[+PICK_SONG]});
+  if(!j||!j.ok){toast((j&&j.error)||'加入失败');return false}
+  var pl=PLAYLISTS.find(function(x){return String(x.id)===String(pid)});
+  var nm=pl?pl.name:'歌单';
+  if(j.added){
+    bumpPlCount(pid,1);
+    if(String(pid)===String(LIKES_PL)){LIKES.add(String(PICK_SONG));paintHearts()}
+    toast('已加入「'+nm+'」');
+  }
+  else toast('这首歌已经在「'+nm+'」里了');
+  if(!opt||!opt.keep)closePicker();
+  if(String(CURRENT_PL)===String(pid))selectPlaylist(pid,true);
+  return true;
+}
+async function createPlFromPicker(){
+  var el=document.getElementById('pickNewName');
+  var name=el.value.trim();
+  if(!name){toast('先输入歌单名');el.focus();return}
+  var j=await postJSON('/local/playlist/create',{name:name});
+  if(!j||!j.ok){toast((j&&j.error)||'新建失败');return}
+  await loadPlaylists();
+  var nid=(j.playlist||{}).id;
+  var pl=PLAYLISTS.find(function(x){return String(x.id)===String(nid)});
+  if(pl)await addToPl(pl.id);
+  else toast('歌单建好了，刷新一下页面就能看到');
+}
+document.getElementById('pickClose').onclick=closePicker;
+document.getElementById('pickModal').onclick=function(e){if(e.target===this)closePicker()};
+document.getElementById('pickNewGo').onclick=createPlFromPicker;
+document.getElementById('pickNewName').addEventListener('keydown',function(e){if(e.key==='Enter')createPlFromPicker()});
+
+/* ---- 编辑歌单 ---- */
+var EDIT_PL=null, EDIT_SEARCH_T=null;
+function openPlEdit(pl){
+  EDIT_PL=pl;
+  document.getElementById('editName').value=pl.name||'';
+  document.getElementById('editSub').textContent='共 '+(pl.song_count||0)+' 首';
+  document.getElementById('editSearch').value='';
+  var res=document.getElementById('editRes');res.innerHTML='';res.classList.remove('show');
+  document.getElementById('editModal').classList.add('show');
+  loadEditSongs();
+}
+function closeEdit(){document.getElementById('editModal').classList.remove('show');EDIT_PL=null}
+async function loadEditSongs(){
+  if(!EDIT_PL)return;
+  var pid=EDIT_PL.id;
+  var box=document.getElementById('editSongs');
+  box.innerHTML='<div class="es-loading">正在加载…</div>';
+  var r=await api('/playlists/'+pid+'/songs');
+  var songs=(r.success&&r.data)?r.data:[];
+  songs.forEach(remember);
+  var pl=PLAYLISTS.find(function(x){return String(x.id)===String(pid)});
+  if(pl){pl.song_count=songs.length;
+    var c=document.querySelector('.side-item[data-pl="'+pl.id+'"] .cnt');if(c)c.textContent=songs.length}
+  document.getElementById('editSub').textContent='共 '+songs.length+' 首';
+  if(!songs.length){box.innerHTML='<div class="es-loading">这个歌单还是空的，用上面的搜索框加歌</div>';return}
+  box.innerHTML='';
+  songs.forEach(function(s){
+    var p=parseTitle(s.title);
+    var row=document.createElement('div');row.className='es-row';
+    row.innerHTML='<span class="es-nm"><b>'+esc(p.title)+'</b><i>'+esc(p.artist||s.artist||'')+'</i></span><button class="es-del" title="从歌单移除">×</button>';
+    row.querySelector('.es-del').onclick=function(ev){ev.stopPropagation();removeFromPl(s.id)};
+    box.appendChild(row);
+  });
+}
+async function removeFromPl(sid){
+  if(!EDIT_PL)return;
+  var pid=EDIT_PL.id;
+  var j=await postJSON('/local/playlist/songs/remove',{id:pid,song_id:sid});
+  if(!j||!j.ok){toast((j&&j.error)||'移除失败');return}
+  toast(j.msg||'已移除');
+  if(String(pid)===String(LIKES_PL)){LIKES.delete(String(sid));paintHearts()}
+  await loadEditSongs();
+  if(String(CURRENT_PL)===String(pid))selectPlaylist(pid,true);
+  loadPlaylists();
+}
+document.getElementById('editSearch').addEventListener('input',function(e){
+  var q=e.target.value.trim();
+  var res=document.getElementById('editRes');
+  clearTimeout(EDIT_SEARCH_T);
+  if(!q){res.innerHTML='';res.classList.remove('show');return}
+  res.classList.add('show');
+  res.innerHTML='<div class="es-loading">搜索中…</div>';
+  EDIT_SEARCH_T=setTimeout(function(){doEditSearch(q)},300);
+});
+async function doEditSearch(q){
+  var res=document.getElementById('editRes');
+  var j=null;
+  try{j=await (await fetch(BRIDGE+'/local/library/search?q='+encodeURIComponent(q)+'&limit=20')).json()}catch(e){}
+  if(!j||!j.ok){res.innerHTML='<div class="es-loading">搜索失败，检查本机服务</div>';return}
+  if(!j.songs||!j.songs.length){res.innerHTML='<div class="es-loading">没搜到，换个关键词试试</div>';return}
+  res.innerHTML='';
+  j.songs.forEach(function(s){
+    remember(s);
+    var row=document.createElement('div');row.className='es-row';
+    row.innerHTML='<span class="es-nm"><b>'+esc(s.title)+'</b><i>'+esc(s.artist||'')+'</i></span><button class="es-add" title="加入歌单">＋</button>';
+    row.querySelector('.es-add').onclick=function(){addToEditPl(s.id)};
+    res.appendChild(row);
+  });
+}
+async function addToEditPl(sid){
+  if(!EDIT_PL)return;
+  var pid=EDIT_PL.id, nm=EDIT_PL.name;
+  var j=await postJSON('/local/playlist/songs/add',{id:pid,song_ids:[sid]});
+  if(!j||!j.ok){toast((j&&j.error)||'加入失败');return}
+  toast(j.added?'已加入「'+nm+'」':'这首歌已经在歌单里了');
+  if(j.added&&String(pid)===String(LIKES_PL)){LIKES.add(String(sid));paintHearts()}
+  await loadEditSongs();
+  if(String(CURRENT_PL)===String(pid))selectPlaylist(pid,true);
+  loadPlaylists();
+}
+async function savePlName(){
+  if(!EDIT_PL)return;
+  var v=document.getElementById('editName').value.trim();
+  if(!v){toast('歌单名不能为空');return}
+  if(v===EDIT_PL.name){toast('名字没变');return}
+  var pid=EDIT_PL.id;
+  var j=await postJSON('/local/playlist/rename',{id:pid,name:v});
+  if(!j||!j.ok){toast((j&&j.error)||'改名失败');return}
+  toast('已改名为「'+v+'」');
+  await loadPlaylists();
+  EDIT_PL=PLAYLISTS.find(function(x){return String(x.id)===String(pid)})||EDIT_PL;
+  document.getElementById('editName').value=v;
+  if(String(CURRENT_PL)===String(pid))document.getElementById('plName').textContent=v;
+}
+document.getElementById('editSave').onclick=savePlName;
+document.getElementById('editName').addEventListener('keydown',function(e){if(e.key==='Enter')savePlName()});
+document.getElementById('editClose').onclick=closeEdit;
+document.getElementById('editModal').onclick=function(e){if(e.target===this)closeEdit()};
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){closePicker();closeEdit()}});
 
 /* ============ 播放控制 ============ */
 var playWatch=null;
@@ -745,17 +1120,10 @@ volEl.addEventListener('input',function(){
 });
 volEl.addEventListener('change',function(){ if(!volTimer&&!volBusy)sendVol(); });
 
-/* 收藏 */
+/* 收藏（底部播放条） */
 document.getElementById('btnHeart').onclick=function(){
   if(!STATUS||!STATUS.current_song)return;
-  var id=STATUS.current_song.id;
-  api('/player/favorite/status?song_id='+id).then(function(r){
-    var fav=r.success&&r.data&&r.data.is_favorited;
-    var act=fav?'remove':'add';
-    api('/player/favorite/toggle',{method:'POST',body:{song_id:id,action:act}}).then(function(x){
-      if(x.success){document.getElementById('btnHeart').classList.toggle('on',!fav);toast(!fav?'已收藏':'已取消收藏')}
-    });
-  });
+  toggleLike(STATUS.current_song.id);
 };
 
 /* 搜索：歌单页过滤歌曲，发现页过滤歌单卡片 */
@@ -860,6 +1228,9 @@ async function refreshStatus(){
   setModeUI(st.play_mode);
   // 音箱名
   if(st.device_name)document.getElementById('spkName').textContent=st.device_name;
+  // 红心跟当前歌走
+  var bh=document.getElementById('btnHeart');
+  if(bh)bh.classList.toggle('on',!!(cs.id&&isLiked(cs.id)));
   // 高亮当前行
   document.querySelectorAll('.track').forEach(function(row,i){row.classList.toggle('playing',!!(cs.id&&SONGS[i]&&SONGS[i].id===cs.id&&st.is_playing))});
 }
@@ -1358,6 +1729,7 @@ function avSongCard(s,i,cur){
       '<div class="tname"><span class="tx">'+esc(s.name||'')+'</span></div>'+
       '<div class="tsub"><span class="ar">'+esc(s.artist||'—')+'</span>'+(s.album?'<span class="al">'+esc(s.album)+'</span>':'')+'<span class="dd">'+fmt(s.duration)+'</span></div>'+
     '</div>'+
+    actsHtml({nid:s.id,title:s.name||'',artist:s.artist||'',album:s.album||'',duration:s.duration||0})+
     '<span class="tgo'+(cur?' on':'')+'">'+(cur?'<span class="eq"><i></i><i></i><i></i></span>':'▶')+'</span>';
   row.onclick=function(){if(Date.now()<GUARD)return;playArtistSong(i)};
   return row;
@@ -1544,6 +1916,7 @@ document.getElementById('btnBridge').title='当前桥接: '+BRIDGE;
   if(!r.success){showOffline();return}
   document.getElementById('offline').classList.remove('show');
   await loadPlaylists();
+  loadLikes();                        // 我喜欢（红心）状态，后台拉，不阻塞
   loadCovers();                       // 封面后台拉，不阻塞首屏
   // 默认选中：?pl= 指定 > 上次的歌单 > 第一个有歌的歌单
   var qpl=parseInt(qs.get('pl')||'0',10);
