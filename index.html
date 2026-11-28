@@ -89,7 +89,7 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
 .side-item .cnt{margin-left:auto;font-size:11px;color:var(--txt3)}
 
 /* ============ 主区 ============ */
-.main{overflow-y:auto;background:#fff;position:relative;min-height:0}
+.main{grid-column:2;grid-row:2;overflow-y:auto;background:#fff;position:relative;min-height:0}
 .detail{padding:36px 44px 20px;max-width:1180px;margin:0 auto}
 .pl-head{display:flex;gap:28px;align-items:flex-end;margin-bottom:26px}
 .cover{width:200px;height:200px;border-radius:10px;background:linear-gradient(145deg,#f0c2c5,#e8a0a6);box-shadow:0 6px 20px rgba(0,0,0,.12);flex:none;object-fit:cover;border:1px solid #eee}
@@ -340,6 +340,14 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
   .spk-badge span:last-child{display:none}
   .svc-btn span{display:none}
   .svc-btn{padding:0 8px}
+  /* 手机顶栏：只留图标 + 弹性搜索框，避免文字被挤成竖排 */
+  .top{gap:8px;padding:0 12px}
+  .logo{font-size:0;gap:0}
+  .logo .disc{width:28px;height:28px}
+  .search{flex:1 1 70px;width:auto;min-width:0;margin-left:4px}
+  .btn-add{padding:0 10px}
+  #btnBridge{display:none}
+  .mode-btn .mname{display:none}
 }
 @media(max-width:900px){.discover-view{padding:18px 20px 40px}.dv-grid{grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:16px 12px}.dv-title{font-size:20px}}
 </style>
