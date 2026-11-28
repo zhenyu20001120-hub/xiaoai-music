@@ -720,7 +720,6 @@ function renderTracks(){
       '</div>'+
       actsHtml({sid:s.id,title:p.title,artist:arName,album:alName,duration:s.duration})+
       '<span class="tgo'+(cur?' on':'')+'">'+(cur?'<span class="eq"><i></i><i></i><i></i></span>':'▶')+'</span>';
-    row.ondblclick=function(){playSong(i)};
     row.onclick=function(){if(Date.now()<GUARD)return;playSong(i)};
     list.appendChild(row);
   });
@@ -758,9 +757,12 @@ async function postJSON(path,body){
     return await r.json();
   }catch(e){return {ok:false,error:'连不上本机服务，确认桥接在跑'}}
 }
+var LIKE_EPOCH=0;
 async function loadLikes(){
+  var ep=++LIKE_EPOCH;
   try{
     var j=await (await fetch(BRIDGE+'/local/likes',{cache:'no-store'})).json();
+    if(ep!==LIKE_EPOCH)return;   // 加载期间用户已点过红心，别用旧快照盖掉
     if(j&&j.ok){LIKES_PL=j.playlist_id||1;LIKES=new Set((j.ids||[]).map(String));paintHearts()}
   }catch(e){}
 }
@@ -804,7 +806,7 @@ async function resolveActSong(a){
         }
       }catch(e){}
     }
-    return a.song_id;
+    return a.sid;
   }
   toast((j&&j.error)||'这首歌还没建档，先播一次再收藏');
   return null;
@@ -814,6 +816,7 @@ async function toggleLike(id){
   var key=String(id);
   if(LIKE_BUSY[key])return;          // 连点保护：同一条歌同时只发一次
   LIKE_BUSY[key]=1;
+  LIKE_EPOCH++;                      // 让尚未返回的 loadLikes 快照失效
   var wasLiked=isLiked(key);
   // 先乐观更新，点下去立刻见红心，再等服务端确认
   if(wasLiked)LIKES.delete(key);else LIKES.add(key);
@@ -1211,9 +1214,21 @@ function renderDrawer(){
 }
 
 /* ============ 状态同步 ============ */
+var SVC_FAILS=0, OFF_MANUAL=false;
 async function refreshStatus(){
-  var r=await api('/player/status?account_id='+ACC+'&device_id='+DEV);
-  if(!r.success||!r.data)return;
+  var r=null;
+  try{ r=await api('/player/status?account_id='+ACC+'&device_id='+DEV); }catch(e){}
+  if(!r||!r.success||!r.data){
+    // 服务意外掉线也要弹遮罩；连续两次失败才弹，避免偶发抖动误报
+    SVC_FAILS++;
+    if(SVC_FAILS>=2&&!OFF_MANUAL){showOffline();svcPaint(false)}
+    return;
+  }
+  SVC_FAILS=0;
+  if(!OFF_MANUAL){
+    var of=document.getElementById('offline');
+    if(of&&of.classList.contains('show'))of.classList.remove('show');
+  }
   STATUS=r.data;
   var st=STATUS;
   // 底部信息
@@ -1222,7 +1237,7 @@ async function refreshStatus(){
   document.getElementById('barArtist').textContent=p.artist||(st.state==='playing'?'正在播放':'已暂停');
   var bc=document.getElementById('barCover');
   var bcv=cs.cover_url||COVER_MAP[cs.id]||COVER_MAP[String(cs.id)]||'';
-  if(bcv){bc.src=coverUrl(bcv);bc.style.visibility='visible'}else{bc.removeAttribute('src');bc.style.visibility='hidden'}
+  if(bcv){bc.src=imgUrl(bcv);bc.style.visibility='visible'}else{bc.removeAttribute('src');bc.style.visibility='hidden'}
   // 播放/暂停图标
   document.getElementById('icoPlay').innerHTML=st.is_playing?'<path d="M6 5h4v14H6zm8 0h4v14h-4z"/>':'<path d="M8 5v14l11-7z"/>';
   // 进度
@@ -1247,6 +1262,7 @@ function showOffline(extra){
   document.getElementById('offline').classList.add('show');
   var o=document.getElementById('offurl');
   if(o) o.textContent=BRIDGE+P+'/static/goto.html';
+  if(extra){var d=document.getElementById('offDesc');if(d)d.textContent=extra}
 }
 function failAll(msg){toast(msg);showOffline()}
 
@@ -1286,6 +1302,10 @@ function svcWaitReady(times, cb){
 /* 开启：桥接还活着就发 HTTP（无弹窗）；桥接死了才退回 xiaomusic:// 协议 */
 window.svcStart=async function(){
   var hint=document.getElementById('startHint');
+  OFF_MANUAL=false;
+  var ot=document.getElementById('offTitle'), od=document.getElementById('offDesc');
+  if(ot) ot.textContent='连不上小爱音乐服务';
+  if(od) od.textContent='本机服务没在运行。点下面的按钮一键启动，等几秒会自动连上。';
   if(SVC_ON) SVC_ON.disabled=true;
   var alive=false;
   try{ var r=await fetch(BRIDGE+'/local/ping',{cache:'no-store'}); alive=r.ok; }catch(e){}
@@ -1324,6 +1344,7 @@ if(SVC_OFF) SVC_OFF.onclick=async function(){
   var t=document.getElementById('offTitle'), d=document.getElementById('offDesc');
   if(t) t.textContent='服务已关闭';
   if(d) d.textContent='这是你刚才手动关掉的。想继续听歌，点下面的按钮重新开启。';
+  OFF_MANUAL=true;   // 防止轮询把手动关闭的遮罩当成"掉线"覆盖掉
   document.getElementById('offline').classList.add('show');
   svcPaint(false);
 };
